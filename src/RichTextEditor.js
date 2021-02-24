@@ -5,7 +5,7 @@ import { convertToHTML, convertFromHTML } from "draft-convert";
 import "draft-js/dist/Draft.css";
 import RichTextContent from "./RichTextContent";
 
-export default function DraftJsEditor({ initialContent, onSave }) {
+export default function DraftJsEditor({ initialContent, onSave, onCancel }) {
   const [editorState, setEditorState] = useState(() =>
     initialContent
       ? EditorState.createWithContent(convertFromHTML(initialContent))
@@ -66,6 +66,7 @@ export default function DraftJsEditor({ initialContent, onSave }) {
             />
           </div>
           <button onClick={handleSave}>save</button>
+          <button onClick={onCancel}>cancel</button>
         </>
       ) : (
         <ContentPreview editorState={editorState} />
