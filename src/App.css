@@ -1,16 +1,14 @@
-.wrapper-class {
-  padding: 1rem;
-  border: 1px solid #ccc;
+.DraftEditor-root {
+  flex-grow: 1;
+  display: flex;
 }
-.editor-class {
-  background-color: lightgray;
-  padding: 1rem;
-  border: 1px solid #ccc;
+
+.DraftEditor-editorContainer {
+  flex-grow: 1;
+  display: flex;
 }
-.toolbar-class {
-  border: 1px solid #ccc;
-}
-.preview {
-  padding: 1rem;
-  margin-top: 1rem;
+
+.public-DraftEditor-content {
+  flex-grow: 1;
+  padding: var(--s0);
 }

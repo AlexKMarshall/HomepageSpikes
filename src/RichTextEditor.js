@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Editor, EditorState, RichUtils } from "draft-js";
 import { convertToHTML, convertFromHTML } from "draft-convert";
+import { Button, IconButton } from "./components/button";
+import { Box, Cluster, Stack } from "./layout";
+import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
+  MdFormatListBulleted,
+} from "react-icons/md";
 
 import "draft-js/dist/Draft.css";
-import RichTextContent from "./RichTextContent";
 
 export default function DraftJsEditor({ initialContent, onSave, onCancel }) {
   const [editorState, setEditorState] = useState(() =>
@@ -11,7 +18,6 @@ export default function DraftJsEditor({ initialContent, onSave, onCancel }) {
       ? EditorState.createWithContent(convertFromHTML(initialContent))
       : EditorState.createEmpty()
   );
-  const [mode, setMode] = useState("edit");
 
   function handleKeyCommand(command) {
     setEditorState((prevState) => {
@@ -33,62 +39,62 @@ export default function DraftJsEditor({ initialContent, onSave, onCancel }) {
     });
   }
 
-  function toggleMode() {
-    setMode((prevMode) => (prevMode === "edit" ? "view" : "edit"));
-  }
-
   function handleSave() {
     const updatedContent = convertToHTML(editorState.getCurrentContent());
     onSave(updatedContent);
   }
 
   return (
-    <div>
-      <button onClick={toggleMode}>
-        {mode === "edit" ? "preview" : "write"}
-      </button>
-      {mode === "edit" ? (
-        <>
-          <h3>Editor</h3>
+    <Box>
+      <Stack>
+        <Cluster>
+          <InlineStyleToolbar onToggle={toggleInlineStyle} />
           <BlockStyleToolbar
             editorState={editorState}
             onToggle={toggleBlockType}
           />
-          <button onClick={() => toggleInlineStyle("BOLD")}>B</button>
-          <button onClick={() => toggleInlineStyle("ITALIC")}>I</button>
-          <button onClick={() => toggleInlineStyle("UNDERLINE")}>U</button>
-          <div style={{ border: "2px solid grey", minHeight: "30vh" }}>
-            <Editor
-              blockStyleFn={getBlockStyle}
-              editorState={editorState}
-              onChange={setEditorState}
-              handleKeyCommand={handleKeyCommand}
-            />
-          </div>
-          <button onClick={handleSave}>save</button>
-          <button onClick={onCancel}>cancel</button>
-        </>
-      ) : (
-        <ContentPreview editorState={editorState} />
-      )}
-    </div>
+        </Cluster>
+        <div
+          style={{
+            border: "1px solid grey",
+            minHeight: "30vh",
+            display: "flex",
+          }}
+        >
+          <Editor
+            blockStyleFn={getBlockStyle}
+            editorState={editorState}
+            onChange={setEditorState}
+            handleKeyCommand={handleKeyCommand}
+          />
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Cluster space="s-1">
+            <Button onClick={onCancel}>Cancel</Button>
+            <Button color="primary" onClick={handleSave}>
+              Save
+            </Button>
+          </Cluster>
+        </div>
+      </Stack>
+    </Box>
   );
 }
 
-function ContentPreview({ editorState }) {
-  const rawHTML = convertToHTML(editorState.getCurrentContent());
+// function ContentPreview({ editorState }) {
+//   const rawHTML = convertToHTML(editorState.getCurrentContent());
 
-  return (
-    <>
-      <h3>Preview</h3>
-      <RichTextContent dangerousHtmlContent={rawHTML} />
-    </>
-  );
-}
+//   return (
+//     <>
+//       <h3>Preview</h3>
+//       <RichTextContent dangerousHtmlContent={rawHTML} />
+//     </>
+//   );
+// }
 
 export const BLOCK_TYPES = [
   { label: "UL", style: "unordered-list-item" },
-  { label: "OL", style: "ordered-list-item" },
+  // { label: "OL", style: "ordered-list-item" },
 ];
 export const HEADER_TYPES = [
   { label: "H1", style: "header-one" },
@@ -105,6 +111,22 @@ function getBlockStyle(block) {
   }
 }
 
+function InlineStyleToolbar({ onToggle }) {
+  return (
+    <Cluster space="s-2">
+      <IconButton onClick={() => onToggle("BOLD")}>
+        <MdFormatBold />
+      </IconButton>
+      <IconButton onClick={() => onToggle("ITALIC")}>
+        <MdFormatItalic />
+      </IconButton>
+      <IconButton onClick={() => onToggle("UNDERLINE")}>
+        <MdFormatUnderlined />
+      </IconButton>
+    </Cluster>
+  );
+}
+
 function BlockStyleToolbar({ editorState, onToggle }) {
   const selection = editorState.getSelection();
   const blockType = editorState
@@ -113,7 +135,7 @@ function BlockStyleToolbar({ editorState, onToggle }) {
     .getType();
 
   return (
-    <div>
+    <Cluster space="s-2">
       <HeaderStyleDropdown
         onToggle={onToggle}
         active={blockType}
@@ -122,12 +144,12 @@ function BlockStyleToolbar({ editorState, onToggle }) {
       {BLOCK_TYPES.map((type) => (
         <BlockStyleButton
           key={type.style}
-          label={type.label}
+          label={<MdFormatListBulleted />}
           onToggle={onToggle}
           style={type.style}
         />
       ))}
-    </div>
+    </Cluster>
   );
 }
 
@@ -149,5 +171,5 @@ function BlockStyleButton({ onToggle, style, label }) {
     onToggle(style);
   }
 
-  return <button onClick={handleClick}>{label}</button>;
+  return <IconButton onClick={handleClick}>{label}</IconButton>;
 }
