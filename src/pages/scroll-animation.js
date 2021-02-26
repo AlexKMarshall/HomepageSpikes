@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import styled from "styled-components";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import { useState } from "react";
 
 const colors = [
@@ -26,7 +28,7 @@ function getDimensions() {
   if (rnd < 0.85) return { x: 1, y: 2 };
   if (rnd < 0.9) return { x: 2, y: 1 };
   if (rnd < 0.95) return { x: 2, y: 2 };
-  if (rnd < 1) return { x: 1, y: 3 };
+  if (rnd < 1) return { x: 3, y: 1 };
 }
 
 function buildData() {
@@ -61,16 +63,65 @@ const SGrid = styled.div`
   grid-auto-rows: 20rem;
   grid-auto-flow: row dense;
   gap: 1rem;
-  background: cornsilk;
+  background: lightslategrey;
+  border-radius: 5px;
 `;
 
 export default function ScrollAnimation() {
   const [items] = useState(buildData());
   return (
-    <SGrid>
-      {items.map((item) => (
-        <SBlock key={item.id} color={item.color} dimensions={item.dimensions} />
-      ))}
-    </SGrid>
+    <>
+      <SGrid>
+        {items.map((item) => (
+          <Block
+            key={item.id}
+            color={item.color}
+            dimensions={item.dimensions}
+          />
+        ))}
+      </SGrid>
+    </>
+  );
+}
+
+function Appears() {
+  const { ref, inView, entry } = useInView();
+
+  console.log(inView);
+  console.log(entry);
+
+  return (
+    <div ref={ref} style={{ display: "flex", justifyContent: "center" }}>
+      <motion.h2 animate={{ opacity: inView ? 1 : 0 }}>
+        I appear at some point
+      </motion.h2>
+    </div>
+  );
+}
+
+const MBlock = motion(SBlock);
+
+function Block({ color, dimensions }) {
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+    triggerOnce: true,
+  });
+
+  return (
+    <MBlock
+      color={color}
+      dimensions={dimensions}
+      ref={ref}
+      animate={{ opacity: inView ? 1 : 0, y: inView ? 0 : 100 }}
+      transition={{
+        y: {
+          mass: 2,
+          stiffness: 150,
+        },
+        opacity: {
+          duration: 0.75,
+        },
+      }}
+    />
   );
 }
