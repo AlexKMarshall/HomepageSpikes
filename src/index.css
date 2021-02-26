@@ -30,6 +30,7 @@ dd {
 
 /* Set core body defaults */
 body {
+  width: 100%;
   min-height: 100vh;
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
