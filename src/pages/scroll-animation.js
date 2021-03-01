@@ -71,6 +71,7 @@ export default function ScrollAnimation() {
   const [items] = useState(buildData());
   return (
     <>
+      <h2>Animate appearance on scroll</h2>
       <SGrid>
         {items.map((item) => (
           <Block

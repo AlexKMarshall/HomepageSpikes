@@ -56,9 +56,11 @@ export default function DraftJsEditor({ initialContent, onSave, onCancel }) {
         </Cluster>
         <div
           style={{
-            border: "1px solid grey",
+            border: "2px solid lightgrey",
             minHeight: "30vh",
             display: "flex",
+            borderRadius: "10px",
+            overflow: "hidden",
           }}
         >
           <Editor

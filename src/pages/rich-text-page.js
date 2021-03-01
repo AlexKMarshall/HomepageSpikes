@@ -16,7 +16,11 @@ const cats = [
 ];
 
 const AlternatingBox = styled(Box)`
-  background: hotpink;
+  background: ivory;
+
+  &:nth-child(even) > * {
+    flex-direction: row-reverse;
+  }
 `;
 
 export default function RichTextPage() {
@@ -37,34 +41,40 @@ export default function RichTextPage() {
   return (
     <div>
       <h2>Rich Text Editor with DraftJs</h2>
-      {posts.map((post, i) => (
-        <AlternatingBox key={post.item} className="alternating-box">
-          <ImageFeature
-            imageUrl={cats[i]}
-            richContent={
-              postToEdit === post.item ? (
-                <RichTextEditor
-                  key={post.item}
-                  initialContent={post.content}
-                  onSave={(content) => updatePost(post.item, content)}
-                  onCancel={() => setPostToEdit("")}
-                />
-              ) : (
-                <Box>
-                  <Stack>
-                    <RichTextContent dangerousHtmlContent={post.content} />
-                    <Cluster>
-                      <button onClick={() => setPostToEdit(post.item)}>
-                        Edit this item
-                      </button>
-                    </Cluster>
-                  </Stack>
-                </Box>
-              )
-            }
-          />
-        </AlternatingBox>
-      ))}
+      <Stack>
+        {posts.map((post, i) => (
+          <AlternatingBox
+            key={post.item}
+            className="alternating-box"
+            // style={{ background: "cornsilk" }}
+          >
+            <ImageFeature
+              imageUrl={cats[i]}
+              richContent={
+                postToEdit === post.item ? (
+                  <RichTextEditor
+                    key={post.item}
+                    initialContent={post.content}
+                    onSave={(content) => updatePost(post.item, content)}
+                    onCancel={() => setPostToEdit("")}
+                  />
+                ) : (
+                  <Box>
+                    <Stack>
+                      <RichTextContent dangerousHtmlContent={post.content} />
+                      <Cluster>
+                        <button onClick={() => setPostToEdit(post.item)}>
+                          Edit this item
+                        </button>
+                      </Cluster>
+                    </Stack>
+                  </Box>
+                )
+              }
+            />
+          </AlternatingBox>
+        ))}
+      </Stack>
     </div>
   );
 }

@@ -52,8 +52,8 @@ const SBox = styled.div`
   border: var(--border) solid;
 `;
 
-export function Box({ children }) {
-  return <SBox>{children}</SBox>;
+export function Box(props) {
+  return <SBox {...props}></SBox>;
 }
 
 const SStack = styled.div`
