@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import styled from "styled-components";
 import useMeasure from "react-use-measure";
+import { motion, AnimatePresence, AnimateSharedLayout } from "framer-motion";
 
 import samplePdf from "../assets/sample.pdf";
 
@@ -11,9 +12,14 @@ const SDocument = styled(Document)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 `;
 
-const SPage = styled(Page)``;
+const PageWithRef = forwardRef((props, ref) => {
+  return <Page inputRef={ref} {...props} />;
+});
+
+const MPage = motion(PageWithRef);
 
 const SContainer = styled.div`
   height: 75vh;
@@ -42,7 +48,17 @@ export default function PdfViewer() {
           file={samplePdf}
           onLoadSuccess={onDocumentLoadSuccess}
         >
-          <SPage pageNumber={pageNumber} height={bounds.height} />
+          <AnimatePresence>
+            <motion.div
+              key={`page-${pageNumber}`}
+              style={{ position: "absolute" }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              initial={{ x: "100vw", opacity: 0, scale: 0.9 }}
+              exit={{ x: "-100vw", opacity: 0, scale: 1.1 }}
+            >
+              <MPage pageNumber={pageNumber} height={bounds.height} />
+            </motion.div>
+          </AnimatePresence>
         </SDocument>
       </SContainer>
 
