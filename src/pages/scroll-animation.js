@@ -85,21 +85,6 @@ export default function ScrollAnimation() {
   );
 }
 
-function Appears() {
-  const { ref, inView, entry } = useInView();
-
-  console.log(inView);
-  console.log(entry);
-
-  return (
-    <div ref={ref} style={{ display: "flex", justifyContent: "center" }}>
-      <motion.h2 animate={{ opacity: inView ? 1 : 0 }}>
-        I appear at some point
-      </motion.h2>
-    </div>
-  );
-}
-
 const MBlock = motion(SBlock);
 
 function Block({ color, dimensions }) {
