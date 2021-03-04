@@ -6,6 +6,7 @@ import RichTextPage from "./pages/rich-text-page";
 import ScrollAnimation from "./pages/scroll-animation";
 import ScrollGallery from "./features/scroll-gallery";
 import PdfViewer from "./features/pdf-viewer";
+import PageSwiper from "./features/page-swiper";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
               <Link to="/rich-text-editor">Rich Text Editor</Link>
               <Link to="/scroll-animation">Scroll Animation</Link>
               <Link to="/pdf-viewer">PDF Viewer</Link>
+              <Link to="/page-swiper">Page Swiper</Link>
             </Cluster>
           </Box>
         </nav>
@@ -33,6 +35,9 @@ function App() {
           </Route>
           <Route path="/pdf-viewer">
             <PdfViewer />
+          </Route>
+          <Route path="/page-swiper">
+            <PageSwiper />
           </Route>
           <Route path="/">
             <div></div>
