@@ -99,12 +99,17 @@ export default function PageSwiper() {
               x: moveDirection === "right" ? "-100vw" : "100vw",
               scale: moveDirection === "right" ? 1.1 : 0.9,
             }}
-            transition={{ mass: 1.5, damping: 5 }}
+            // transition={{ mass: 1.5, damping: 1 }}
           >
             <img
               src={images[pageNumber - 1]}
               alt=""
-              style={{ objectFit: "cover", height: "100%", width: "100%" }}
+              style={{
+                objectFit: "cover",
+                height: "100%",
+                width: "100%",
+                boxShadow: "0px 0px 10px 2px rgba(0,0,0,0.3)",
+              }}
             />
           </MFrame>
         </AnimatePresence>
