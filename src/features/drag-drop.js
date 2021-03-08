@@ -112,7 +112,7 @@ export default function DragDrop() {
       <h2>Table of Contents</h2>
       <nav style={{ display: "flex", flexDirection: "column" }}>
         {orderedHeadlines.map((headline) => (
-          <HashLink key={headline.id} to={`/drag-drop#${headline.id}`}>
+          <HashLink smooth key={headline.id} to={`/drag-drop#${headline.id}`}>
             {headline.text}
           </HashLink>
         ))}
