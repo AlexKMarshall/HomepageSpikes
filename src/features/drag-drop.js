@@ -2,6 +2,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
+const types = { WIDGET: "widget", HEADER: "header" };
+
 const colors = [
   "#668586",
   "#82aeb1",
@@ -24,18 +26,42 @@ const jokes = [
   "What did one plate say to the other plate? Dinner is on me!",
 ];
 
-const initialItems = jokes.reduce((collection, _joke, index) => {
-  const item = makeItem(index);
+const headers = [
+  "Local Man Wins Aubergine Growing Contest For the Third Time",
+  "Woman With Butterfly Tattoo Arrested for 37th Time",
+  "Viral Photo of Lizard Had Been Photoshopped",
+];
+
+const jokeItems = jokes.reduce((collection, srcItem, index) => {
+  const item =
+    srcItem.type === types.HEADER ? makeHeadline(index) : makeWidget(index);
   return { ...collection, [item.id]: item };
 }, {});
 
-const initialOrder = jokes.map((_joke, index) => makeItem(index).id);
+const headlineItems = headers.reduce((collection, srcItem, index) => {
+  const item = makeHeadline(index);
+  return { ...collection, [item.id]: item };
+}, {});
 
-function makeItem(index) {
+const initialOrder = [
+  ...headers.map((_header, index) => makeHeadline(index).id),
+  ...jokes.map((_joke, index) => makeWidget(index).id),
+];
+
+function makeHeadline(index) {
   return {
-    id: `item-${index}`,
+    id: `headline-${index}`,
+    text: headers[index],
+    type: types.HEADER,
+  };
+}
+
+function makeWidget(index) {
+  return {
+    id: `widget-${index}`,
     text: jokes[index],
     color: colors[randNumber(colors.length)],
+    type: types.WIDGET,
   };
 }
 
@@ -54,7 +80,7 @@ const WidgetList = styled.div`
 `;
 
 export default function DragDrop() {
-  const items = initialItems;
+  const items = { ...jokeItems, ...headlineItems };
   const [order, setOrder] = useState(initialOrder);
 
   const orderedItems = order.map((itemId) => items[itemId]);
@@ -80,15 +106,19 @@ export default function DragDrop() {
         <Droppable droppableId="homepage-0">
           {(provided) => (
             <WidgetList ref={provided.innerRef} {...provided.droppableProps}>
-              {orderedItems.map(({ id, text, color }, index) => (
-                <Widget
-                  key={id}
-                  id={id}
-                  text={text}
-                  color={color}
-                  index={index}
-                />
-              ))}
+              {orderedItems.map(({ id, text, color, type }, index) =>
+                type === types.WIDGET ? (
+                  <Widget
+                    key={id}
+                    id={id}
+                    text={text}
+                    color={color}
+                    index={index}
+                  />
+                ) : (
+                  <Header key={id} id={id} text={text} index={index} />
+                )
+              )}
               {provided.placeholder}
             </WidgetList>
           )}
@@ -97,6 +127,16 @@ export default function DragDrop() {
     </DragDropContext>
   );
 }
+
+const SHeader = styled.h3`
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: navy;
+  border: 1px solid lightgrey;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: white;
+`;
 
 const SWidget = styled.div`
   padding: 2rem;
@@ -123,6 +163,23 @@ function Widget({ id, index, text, color }) {
         >
           {text}
         </SWidget>
+      )}
+    </Draggable>
+  );
+}
+
+function Header({ id, index, text, color }) {
+  return (
+    <Draggable draggableId={id} index={index}>
+      {(provided, snapshot) => (
+        <SHeader
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          isDragging={snapshot.isDragging}
+        >
+          {text}
+        </SHeader>
       )}
     </Draggable>
   );
