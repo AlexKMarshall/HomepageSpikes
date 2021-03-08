@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { HashLink } from "react-router-hash-link";
 
 const types = { WIDGET: "widget", HEADER: "header" };
 
@@ -24,12 +25,17 @@ const jokes = [
   "How do robots eat guacamole? With computer chips.",
   "What do Alexander the Great and Winnie the Pooh have in common? Same middle name.",
   "What did one plate say to the other plate? Dinner is on me!",
+  "Why do pirates not know the alphabet? They always get stuck at 'C'.",
+  "Who did the wizard marry? His ghoul-friend",
+  "Just read a few facts about frogs. They were ribbiting.",
+  "Do you know where you can get chicken broth in bulk? The stock market.",
 ];
 
 const headers = [
   "Local Man Wins Aubergine Growing Contest For the Third Time",
   "Woman With Butterfly Tattoo Arrested for 37th Time",
   "Viral Photo of Lizard Had Been Photoshopped",
+  "Small Tornado Forcast in Northern Regions",
 ];
 
 const jokeItems = jokes.reduce((collection, srcItem, index) => {
@@ -84,6 +90,9 @@ export default function DragDrop() {
   const [order, setOrder] = useState(initialOrder);
 
   const orderedItems = order.map((itemId) => items[itemId]);
+  const orderedHeadlines = orderedItems.filter(
+    (item) => item.type === types.HEADER
+  );
 
   function onDragEnd({ destination, source, draggableId }) {
     if (!destination) {
@@ -99,32 +108,42 @@ export default function DragDrop() {
   }
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Container>
-        <Title>Re-order by Drag and Drop</Title>
+    <div>
+      <h2>Table of Contents</h2>
+      <nav style={{ display: "flex", flexDirection: "column" }}>
+        {orderedHeadlines.map((headline) => (
+          <HashLink key={headline.id} to={`/drag-drop#${headline.id}`}>
+            {headline.text}
+          </HashLink>
+        ))}
+      </nav>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Container>
+          <Title>Re-order by Drag and Drop</Title>
 
-        <Droppable droppableId="homepage-0">
-          {(provided) => (
-            <WidgetList ref={provided.innerRef} {...provided.droppableProps}>
-              {orderedItems.map(({ id, text, color, type }, index) =>
-                type === types.WIDGET ? (
-                  <Widget
-                    key={id}
-                    id={id}
-                    text={text}
-                    color={color}
-                    index={index}
-                  />
-                ) : (
-                  <Header key={id} id={id} text={text} index={index} />
-                )
-              )}
-              {provided.placeholder}
-            </WidgetList>
-          )}
-        </Droppable>
-      </Container>
-    </DragDropContext>
+          <Droppable droppableId="homepage-0">
+            {(provided) => (
+              <WidgetList ref={provided.innerRef} {...provided.droppableProps}>
+                {orderedItems.map(({ id, text, color, type }, index) =>
+                  type === types.WIDGET ? (
+                    <Widget
+                      key={id}
+                      id={id}
+                      text={text}
+                      color={color}
+                      index={index}
+                    />
+                  ) : (
+                    <Header key={id} id={id} text={text} index={index} />
+                  )
+                )}
+                {provided.placeholder}
+              </WidgetList>
+            )}
+          </Droppable>
+        </Container>
+      </DragDropContext>
+    </div>
   );
 }
 
@@ -177,6 +196,7 @@ function Header({ id, index, text, color }) {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
+          id={id}
         >
           {text}
         </SHeader>
