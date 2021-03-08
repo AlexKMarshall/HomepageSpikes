@@ -7,6 +7,7 @@ import ScrollAnimation from "./pages/scroll-animation";
 import ScrollGallery from "./features/scroll-gallery";
 import PdfViewer from "./features/pdf-viewer";
 import PageSwiper from "./features/page-swiper";
+import DragDrop from "./features/drag-drop";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Link to="/scroll-animation">Scroll Animation</Link>
               <Link to="/pdf-viewer">PDF Viewer</Link>
               <Link to="/page-swiper">Page Swiper</Link>
+              <Link to="/drag-drop">Drag & Drop</Link>
             </Cluster>
           </Box>
         </nav>
@@ -38,6 +40,9 @@ function App() {
           </Route>
           <Route path="/page-swiper">
             <PageSwiper />
+          </Route>
+          <Route path="/drag-drop">
+            <DragDrop />
           </Route>
           <Route path="/">
             <div></div>

@@ -49,6 +49,16 @@ export default function PageSwiper() {
   // This doesn't work the first time you change direction
   // not figured out the solution yet
   // works for the keyboard handler, but not the button press
+
+  // Suspect the actual answer for this is to render an array of pages,
+  // you have the current page, then page(s) to the left and page(s) to the right
+  // we don't actually need to know the direction of travel if pages to the left
+  // are rendered off screen to the left - transform translateX, and viceversa for the right
+  // then it should just handle itself when you change the current page +/-1
+  // just add a transition to the transform with CSS
+  // this potentially will get the direction wrong if you skip more than one page at a time
+  // and wrap round the end of the array. But this kind of interaction probably should only
+  // allow a one page at a time movement
   const moveRight = useCallback(() => {
     setMoveDirection("right");
     setPageNumber((pageNum) => (pageNum + 1 <= numPages ? pageNum + 1 : 1));
