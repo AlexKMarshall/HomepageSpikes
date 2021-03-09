@@ -5,7 +5,7 @@ import styled from "styled-components";
 const SContainer = styled.div`
   padding: 1rem;
   border: 1px solid lightgrey;
-  margin-bottom: 1rem;
+  margin-right: 1rem;
 `;
 
 export default function Card({ card, index }) {

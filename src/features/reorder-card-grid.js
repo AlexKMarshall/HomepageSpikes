@@ -1,5 +1,6 @@
 import { useReducer } from "react";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import styled from "styled-components";
 import CardList from "./nested-drag/card-list";
 import { types, itemHash, homePage } from "./nested-drag/data";
 
@@ -64,7 +65,7 @@ function dragDropReducer(state, action) {
 
   if (action.type === actionTypes.DRAG_START) {
     // set enabled droppables
-    console.log(action.payload);
+    // currently only allow the same list, items can't move between lists
     const { source } = action.payload;
     return { ...state, droppablesEnabled: [source.droppableId] };
   }
@@ -77,6 +78,12 @@ function dragDropReducer(state, action) {
   }
 }
 
+const SWidgetList = styled.div`
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid lightgrey;
+`;
+
 export default function Homepage({ homepageId = homePage.id } = {}) {
   const [state, dispatch] = useReducer(dragDropReducer, {
     ...itemHash,
@@ -85,7 +92,7 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
 
   const widgets = state[homepageId].orderedChildren.map((id) => state[id]);
 
-  function renderWidget(widget) {
+  function renderWidget(widget, index) {
     switch (widget.type) {
       case types.CARD_LIST:
         return (
@@ -95,6 +102,7 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
             title={widget.title}
             cards={widget.orderedChildren.map((id) => state[id])}
             isDropEnabled={state.droppablesEnabled.includes(widget.id)}
+            index={index}
           />
         );
       default:
@@ -113,7 +121,17 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
 
   return (
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      {widgets.map(renderWidget)}
+      <Droppable
+        droppableId={homepageId}
+        isDropDisabled={!state.droppablesEnabled.includes(homepageId)}
+      >
+        {(provided) => (
+          <SWidgetList {...provided.droppableProps} ref={provided.innerRef}>
+            {widgets.map(renderWidget)}
+            {provided.placeholder}
+          </SWidgetList>
+        )}
+      </Droppable>
     </DragDropContext>
   );
 }
