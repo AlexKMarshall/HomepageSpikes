@@ -14,11 +14,11 @@ const SCardList = styled.div`
   padding: 1rem;
 `;
 
-export default function CardList({ id, title, cards }) {
+export default function CardList({ id, title, cards, isDropEnabled }) {
   return (
     <SContainer>
       <STitle>{title}</STitle>
-      <Droppable droppableId={id}>
+      <Droppable droppableId={id} isDropDisabled={!isDropEnabled}>
         {(provided) => (
           <SCardList {...provided.droppableProps} ref={provided.innerRef}>
             {cards.map((card, index) => (

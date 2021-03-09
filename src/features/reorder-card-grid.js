@@ -5,50 +5,85 @@ import { types, itemHash, homePage } from "./nested-drag/data";
 
 const actionTypes = {
   DRAG_END: "dragEnd",
+  DRAG_START: "dragStart",
 };
 
 function dragDropReducer(state, action) {
+  if (action.type === actionTypes.DRAG_END) {
+    const {
+      source: dropSource,
+      destination: dropDestination,
+      draggableId,
+    } = action.payload;
+
+    if (!dropDestination) {
+      // didn't drop in a valid space, do nothing
+      return state;
+    }
+
+    if (
+      dropSource.droppableId === dropDestination.droppableId &&
+      dropSource.index === dropDestination.index
+    ) {
+      // didn't move it, do nothing
+      return state;
+    }
+
+    // update item positions
+
+    // remove from source
+    const source = state[dropSource.droppableId];
+    const newSourceOrder = [...source.orderedChildren];
+    newSourceOrder.splice(dropSource.index, 1);
+    const removedFromSource = {
+      ...state,
+      [dropSource.droppableId]: {
+        ...source,
+        orderedChildren: newSourceOrder,
+      },
+    };
+
+    if (!dropDestination) {
+      return removedFromSource;
+    }
+
+    // add to destination
+    const destination = removedFromSource[dropDestination.droppableId];
+    const newDestinationOrder = [...destination.orderedChildren];
+    newDestinationOrder.splice(dropDestination.index, 0, draggableId);
+    const addedToDestination = {
+      ...removedFromSource,
+      [dropDestination.droppableId]: {
+        ...destination,
+        orderedChildren: newDestinationOrder,
+      },
+    };
+
+    return addedToDestination;
+  }
+
+  if (action.type === actionTypes.DRAG_START) {
+    // set enabled droppables
+    console.log(action.payload);
+    const { source } = action.payload;
+    return { ...state, droppablesEnabled: [source.droppableId] };
+  }
+
   switch (action.type) {
     case actionTypes.DRAG_END:
-      const {
-        source: dropSource,
-        destination: dropDestination,
-        draggableId,
-      } = action.payload;
-      // remove from source
-      const source = state[dropSource.droppableId];
-      const newSourceOrder = [...source.orderedChildren];
-      newSourceOrder.splice(dropSource.index, 1);
-      const removedFromSource = {
-        ...state,
-        [dropSource.droppableId]: {
-          ...source,
-          orderedChildren: newSourceOrder,
-        },
-      };
-
-      // add to destination
-      const destination = removedFromSource[dropDestination.droppableId];
-      const newDestinationOrder = [...destination.orderedChildren];
-      newDestinationOrder.splice(dropDestination.index, 0, draggableId);
-      const addedToDestination = {
-        ...removedFromSource,
-        [dropDestination.droppableId]: {
-          ...destination,
-          orderedChildren: newDestinationOrder,
-        },
-      };
-
-      return addedToDestination;
+    case actionTypes.DRAG_START:
     default:
       throw new Error("unexpected action type ", action.type);
   }
 }
 
 export default function Homepage({ homepageId = homePage.id } = {}) {
-  const [items, dispatch] = useReducer(dragDropReducer, itemHash);
+  const [state, dispatch] = useReducer(dragDropReducer, {
+    ...itemHash,
+    droppablesEnabled: [],
+  });
 
-  const widgets = items[homepageId].orderedChildren.map((id) => items[id]);
+  const widgets = state[homepageId].orderedChildren.map((id) => state[id]);
 
   function renderWidget(widget) {
     switch (widget.type) {
@@ -58,7 +93,8 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
             key={widget.id}
             id={widget.id}
             title={widget.title}
-            cards={widget.orderedChildren.map((id) => items[id])}
+            cards={widget.orderedChildren.map((id) => state[id])}
+            isDropEnabled={state.droppablesEnabled.includes(widget.id)}
           />
         );
       default:
@@ -71,8 +107,12 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
     dispatch({ type: actionTypes.DRAG_END, payload: result });
   }
 
+  function onDragStart(start) {
+    dispatch({ type: actionTypes.DRAG_START, payload: start });
+  }
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       {widgets.map(renderWidget)}
     </DragDropContext>
   );
