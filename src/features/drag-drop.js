@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { HashLink } from "react-router-hash-link";
 
-const types = { WIDGET: "widget", HEADER: "header" };
+const types = { WIDGET: "widget", HEADER: "header", CARDS: "cards" };
 
 const colors = [
   "#668586",
@@ -49,10 +49,26 @@ const headlineItems = headers.reduce((collection, srcItem, index) => {
   return { ...collection, [item.id]: item };
 }, {});
 
+const cards = [["hotpink", "darkseagreen", "lightblue"]];
+
+const cardsItems = cards.reduce((collection, srcItem, index) => {
+  const item = makeCardWidget(index);
+  return { ...collection, [item.id]: item };
+}, {});
+
 const initialOrder = [
   ...headers.map((_header, index) => makeHeadline(index).id),
   ...jokes.map((_joke, index) => makeWidget(index).id),
+  ...cards.map((_cards, index) => makeCardWidget(index).id),
 ];
+
+function makeCardWidget(index) {
+  return {
+    id: `cards-${index}`,
+    colors: cards[index],
+    type: types.CARDS,
+  };
+}
 
 function makeHeadline(index) {
   return {
@@ -86,10 +102,11 @@ const WidgetList = styled.div`
 `;
 
 export default function DragDrop() {
-  const items = { ...jokeItems, ...headlineItems };
+  const items = { ...jokeItems, ...headlineItems, ...cardsItems };
   const [order, setOrder] = useState(initialOrder);
 
   const orderedItems = order.map((itemId) => items[itemId]);
+
   const orderedHeadlines = orderedItems.filter(
     (item) => item.type === types.HEADER
   );
@@ -124,7 +141,7 @@ export default function DragDrop() {
           <Droppable droppableId="homepage-0">
             {(provided) => (
               <WidgetList ref={provided.innerRef} {...provided.droppableProps}>
-                {orderedItems.map(({ id, text, color, type }, index) =>
+                {orderedItems.map(({ id, text, color, type, ...rest }, index) =>
                   type === types.WIDGET ? (
                     <Widget
                       key={id}
@@ -133,8 +150,15 @@ export default function DragDrop() {
                       color={color}
                       index={index}
                     />
-                  ) : (
+                  ) : type === types.HEADER ? (
                     <Header key={id} id={id} text={text} index={index} />
+                  ) : (
+                    <CardWidget
+                      key={id}
+                      id={id}
+                      colors={rest.colors}
+                      index={index}
+                    />
                   )
                 )}
                 {provided.placeholder}
@@ -164,7 +188,6 @@ const SWidget = styled.div`
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   background-color: ${(props) => props.color};
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 `;
 
 // There should be a better way of wrapping this so that the stack is still applied rather than
@@ -182,6 +205,71 @@ function Widget({ id, index, text, color }) {
         >
           {text}
         </SWidget>
+      )}
+    </Draggable>
+  );
+}
+
+const SCardWidget = styled.div`
+  display: flex;
+  background-color: cornsilk;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+`;
+
+const SCard = styled.div`
+  width: 200px;
+  height: 200px;
+  background-color: ${(props) => props.color};
+  border-radius: 0.5rem;
+  margin-right: 2rem;
+`;
+
+const SCardContainer = styled.div`
+  flex-grow: 1;
+  display: flex;
+  background-color: ghostwhite;
+`;
+
+function CardWidget({ id, index, colors }) {
+  return (
+    <Draggable draggableId={id} index={index}>
+      {(provided) => (
+        <SCardWidget
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+        >
+          <Droppable droppableId={id} direction="horizontal">
+            {(provided) => (
+              <SCardContainer
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {colors.map((color, index) => (
+                  <Draggable
+                    draggableId={`id-${color}`}
+                    key={`id-${color}`}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <SCard
+                        key={`id-${color}`}
+                        color={color}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                      />
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </SCardContainer>
+            )}
+          </Droppable>
+        </SCardWidget>
       )}
     </Draggable>
   );
