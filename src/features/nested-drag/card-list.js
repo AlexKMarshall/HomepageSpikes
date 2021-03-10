@@ -10,8 +10,8 @@ const SContainer = styled.div`
 const STitle = styled.h3`
   padding: 1rem;
 `;
+
 const SCardList = styled.div`
-  display: flex;
   padding: 1rem;
 `;
 

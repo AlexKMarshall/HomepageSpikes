@@ -9,6 +9,7 @@ import PdfViewer from "./features/pdf-viewer";
 import PageSwiper from "./features/page-swiper";
 import DragDrop from "./features/drag-drop";
 import NestedDragDrop from "./features/nested-drag-drop";
+import Switcher from "./features/switcher";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Link to="/page-swiper">Page Swiper</Link>
               <Link to="/drag-drop">Drag & Drop</Link>
               <Link to="/nested-drag-drop">Nested Drag & Drop</Link>
+              <Link to="/switcher">Switcher</Link>
             </Cluster>
           </Box>
         </nav>
@@ -48,6 +50,9 @@ function App() {
           </Route>
           <Route path="/nested-drag-drop">
             <NestedDragDrop />
+          </Route>
+          <Route path="/switcher">
+            <Switcher />
           </Route>
           <Route path="/">
             <div></div>
