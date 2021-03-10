@@ -12,6 +12,7 @@ const STitle = styled.h3`
 `;
 
 const SCardList = styled.div`
+  display: flex;
   padding: 1rem;
 `;
 
