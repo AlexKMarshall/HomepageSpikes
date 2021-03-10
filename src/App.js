@@ -8,7 +8,7 @@ import ScrollGallery from "./features/scroll-gallery";
 import PdfViewer from "./features/pdf-viewer";
 import PageSwiper from "./features/page-swiper";
 import DragDrop from "./features/drag-drop";
-import Homepage from "./features/reorder-card-grid";
+import NestedDragDrop from "./features/nested-drag-drop";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
               <Link to="/pdf-viewer">PDF Viewer</Link>
               <Link to="/page-swiper">Page Swiper</Link>
               <Link to="/drag-drop">Drag & Drop</Link>
-              <Link to="/card-grid">Card Grid</Link>
+              <Link to="/nested-drag-drop">Nested Drag & Drop</Link>
             </Cluster>
           </Box>
         </nav>
@@ -46,8 +46,8 @@ function App() {
           <Route path="/drag-drop">
             <DragDrop />
           </Route>
-          <Route path="/card-grid">
-            <Homepage />
+          <Route path="/nested-drag-drop">
+            <NestedDragDrop />
           </Route>
           <Route path="/">
             <div></div>

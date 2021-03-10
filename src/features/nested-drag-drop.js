@@ -84,7 +84,7 @@ const SWidgetList = styled.div`
   border: 1px solid lightgrey;
 `;
 
-export default function Homepage({ homepageId = homePage.id } = {}) {
+export default function NestedDragDrop({ homepageId = homePage.id } = {}) {
   const [state, dispatch] = useReducer(dragDropReducer, {
     ...itemHash,
     droppablesEnabled: [],
@@ -111,7 +111,6 @@ export default function Homepage({ homepageId = homePage.id } = {}) {
   }
 
   function onDragEnd(result) {
-    console.log("finished dragging");
     dispatch({ type: actionTypes.DRAG_END, payload: result });
   }
 
