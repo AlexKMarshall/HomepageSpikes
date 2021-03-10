@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import useResizeObserver from "use-resize-observer";
 import styled from "styled-components";
 
@@ -37,7 +37,7 @@ const SCard = styled.div`
 const content = [1, 2, 3].map((id) => ({ id, content: getContent() }));
 
 export default function Switcher() {
-  const [dragDirection, setDragDirection] = useState("horizontal");
+  const [setDragDirection] = useState("horizontal");
   const flexRef = useRef();
 
   const handleResize = useMemo(() => {
@@ -57,7 +57,7 @@ export default function Switcher() {
     }
 
     return throttle(detectLayout, 500);
-  }, []);
+  }, [setDragDirection]);
 
   useResizeObserver({ ref: flexRef, onResize: throttle(handleResize, 500) });
 
@@ -115,7 +115,7 @@ function throttle(func, time) {
   };
 }
 
-function mergeRefs(...refs) {
+export function mergeRefs(...refs) {
   const filteredRefs = refs.filter(Boolean);
   if (!filteredRefs.length) return null;
   if (filteredRefs.length === 1) return filteredRefs[0];
